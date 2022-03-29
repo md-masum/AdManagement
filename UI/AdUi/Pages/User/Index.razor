@@ -1,0 +1,41 @@
+﻿@page "/"
+@using AdCore.Enums
+@using System.Security.Claims
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app. <br/>
+@if (_forecasts is not null)
+{
+    foreach (var item in _forecasts)
+    {
+        <p>@item</p>
+    }
+}
+
+@code
+{
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    private string[] _forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AssignUserTheme((await AuthenticationState).User);
+
+        _forecasts = await _restClient.GetJsonAsync<string[]>("WeatherForecast");
+    }
+
+    public void AssignUserTheme(ClaimsPrincipal user)
+    {
+        if (user.Identity is {IsAuthenticated: true} && user.IsInRole(Roles.Admin.ToString()))
+            _navigationManager.NavigateTo("/admin");
+        else if (user.Identity is {IsAuthenticated: true} && user.IsInRole(Roles.Seller.ToString()))
+            _navigationManager.NavigateTo("/seller");
+        else
+            _navigationManager.NavigateTo("/");
+    }
+}

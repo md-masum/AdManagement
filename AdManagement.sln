@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdApi", "API\AdApi\AdApi.csproj", "{56844190-8B64-44AF-8475-30C50CD3A0C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdCore", "API\AdCore\AdCore.csproj", "{67ED6D47-B84E-42C6-A6DA-0FF55B8CABD6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdService", "API\AdService\AdService.csproj", "{5E2BEDA9-0A0D-4A0C-ACF3-A1997DFE1BDD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdRepository", "API\AdRepository\AdRepository.csproj", "{730D3845-7BFC-484C-AAE8-28B52EA2D9CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{914002A1-3258-4DB9-890C-66108C5BD970}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{0042780E-9201-4A2A-AFFF-441352232AFD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdUi", "UI\AdUi\AdUi.csproj", "{A42A514B-421A-4987-8493-C492DB56147D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56844190-8B64-44AF-8475-30C50CD3A0C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56844190-8B64-44AF-8475-30C50CD3A0C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56844190-8B64-44AF-8475-30C50CD3A0C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56844190-8B64-44AF-8475-30C50CD3A0C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67ED6D47-B84E-42C6-A6DA-0FF55B8CABD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67ED6D47-B84E-42C6-A6DA-0FF55B8CABD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67ED6D47-B84E-42C6-A6DA-0FF55B8CABD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67ED6D47-B84E-42C6-A6DA-0FF55B8CABD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E2BEDA9-0A0D-4A0C-ACF3-A1997DFE1BDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E2BEDA9-0A0D-4A0C-ACF3-A1997DFE1BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E2BEDA9-0A0D-4A0C-ACF3-A1997DFE1BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E2BEDA9-0A0D-4A0C-ACF3-A1997DFE1BDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{730D3845-7BFC-484C-AAE8-28B52EA2D9CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{730D3845-7BFC-484C-AAE8-28B52EA2D9CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{730D3845-7BFC-484C-AAE8-28B52EA2D9CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{730D3845-7BFC-484C-AAE8-28B52EA2D9CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A42A514B-421A-4987-8493-C492DB56147D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A42A514B-421A-4987-8493-C492DB56147D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A42A514B-421A-4987-8493-C492DB56147D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A42A514B-421A-4987-8493-C492DB56147D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{56844190-8B64-44AF-8475-30C50CD3A0C3} = {0042780E-9201-4A2A-AFFF-441352232AFD}
+		{67ED6D47-B84E-42C6-A6DA-0FF55B8CABD6} = {0042780E-9201-4A2A-AFFF-441352232AFD}
+		{5E2BEDA9-0A0D-4A0C-ACF3-A1997DFE1BDD} = {0042780E-9201-4A2A-AFFF-441352232AFD}
+		{730D3845-7BFC-484C-AAE8-28B52EA2D9CE} = {0042780E-9201-4A2A-AFFF-441352232AFD}
+		{A42A514B-421A-4987-8493-C492DB56147D} = {914002A1-3258-4DB9-890C-66108C5BD970}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9D0007E0-7103-4158-A882-57D5D62AEB33}
+	EndGlobalSection
+EndGlobal

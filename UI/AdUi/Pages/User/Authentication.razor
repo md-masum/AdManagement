@@ -1,0 +1,26 @@
+﻿@page "/authentication/{action}"
+@using System.Security.Claims
+@using AdCore.Enums
+
+<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="OnLogInSucceeded" />
+
+@code{
+    [Parameter] public string Action { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    private async Task OnLogInSucceeded()
+    {
+        var user = (await AuthenticationState).User;
+        if (user.Identity is {IsAuthenticated: true } 
+            && !user.IsInRole(Roles.Admin.ToString()) 
+            && !user.IsInRole(Roles.Seller.ToString()) 
+            && !user.IsInRole(Roles.User.ToString()))
+        {
+
+            await _restClient.GetJsonAsync<object>($"api/Auth/user/{user.FindFirst(ClaimTypes.Sid)}");
+        }
+        
+    }
+}

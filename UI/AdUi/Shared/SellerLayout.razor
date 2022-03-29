@@ -1,0 +1,27 @@
+﻿@using AdUi.Components.Seller
+@inherits LayoutComponentBase
+
+<AuthorizeView Roles="Seller">
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu/>
+            </div>
+
+            <main>
+                <div class="top-row px-4 auth">
+                    <LoginDisplay/>
+                    <a>Seller</a>
+                </div>
+
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
+        </div>
+    </Authorized>
+    
+    <NotAuthorized>
+        <p>You don't have permission to access this page</p>
+    </NotAuthorized>
+</AuthorizeView>
