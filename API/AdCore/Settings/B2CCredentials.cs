@@ -1,4 +1,4 @@
-﻿namespace AdRepository.Settings
+﻿namespace AdCore.Settings
 {
     public class B2CCredentials
     {

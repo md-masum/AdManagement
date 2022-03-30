@@ -1,19 +1,19 @@
-﻿namespace AdRepository.Helpers
+﻿namespace AdCore.Helpers
 {
-    internal class B2CCustomAttributeHelper
+    public class B2CCustomAttributeHelper
     {
         internal readonly string B2CExtensionAppClientId;
 
-        internal B2CCustomAttributeHelper(string b2CExtensionAppClientId)
+        public B2CCustomAttributeHelper(string b2CExtensionAppClientId)
         {
             B2CExtensionAppClientId = b2CExtensionAppClientId.Replace("-", "");
         }
 
-        internal string GetCompleteAttributeName(string attributeName)
+        public string GetCompleteAttributeName(string attributeName)
         {
             if (string.IsNullOrWhiteSpace(attributeName))
             {
-                throw new System.ArgumentException("Parameter cannot be null", nameof(attributeName));
+                throw new ArgumentException("Parameter cannot be null", nameof(attributeName));
             }
 
             return $"extension_{B2CExtensionAppClientId}_{attributeName}";

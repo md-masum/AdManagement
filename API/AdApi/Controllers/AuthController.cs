@@ -1,8 +1,10 @@
 ﻿using AdCore.Dtos;
 using AdCore.Enums;
-using AzureADB2CApi;
+using AdRepository;
+using AdRepository.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Graph;
 
 namespace AdApi.Controllers
 {
@@ -28,6 +30,13 @@ namespace AdApi.Controllers
         public async Task<IActionResult> GetUserById(string userId)
         {
             return Ok(await _graphClient.GetUser(userId));
+        }
+
+        [HttpGet("user/{userId}/role")]
+        public async Task<IActionResult> GetUserRoleById(string userId)
+        {
+            var user = (User)await _graphClient.GetUser(userId);
+            return Ok(_graphClient.GetUserRole(user));
         }
 
         [HttpGet("user/{userId}/role/{roleId}")]

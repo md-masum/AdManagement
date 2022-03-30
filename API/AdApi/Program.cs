@@ -1,10 +1,10 @@
 using System.Security.Claims;
 using AdCore.Interface.Repository;
 using AdCore.Interface.Service;
+using AdCore.Settings;
 using AdRepository;
-using AdRepository.Settings;
+using AdRepository.Authentication;
 using AdService;
-using AzureADB2CApi;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;

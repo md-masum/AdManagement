@@ -1,13 +1,13 @@
 ﻿using System.Text.Json;
 using AdCore.Dtos;
 using AdCore.Enums;
-using AdRepository.Helpers;
-using AdRepository.Settings;
+using AdCore.Helpers;
+using AdCore.Settings;
 using Azure.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 
-namespace AzureADB2CApi
+namespace AdRepository.Authentication
 {
     //Configure B2C Tenant https://docs.microsoft.com/en-us/azure/active-directory-b2c/microsoft-graph-get-started?tabs=app-reg-ga
     //Configure App to call graph https://docs.microsoft.com/en-us/graph/sdks/choose-authentication-providers?tabs=CS#client-credentials-provider
@@ -46,12 +46,26 @@ namespace AzureADB2CApi
 
         public async Task<object> GetUser(string userId)
         {
+            try
+            {
+                string roleAttributeName = GetAttributeFullName("Role");
+                var user = await GraphServiceClient.Users[userId]
+                    .Request()
+                    .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
+                    .GetAsync();
+                return user;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return null;
+            }
+        }
+
+        public string GetUserRole(User user)
+        {
             string roleAttributeName = GetAttributeFullName("Role");
-            var user = await GraphServiceClient.Users[userId]
-                .Request()
-                .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
-                .GetAsync();
-            return user;
+            return user.AdditionalData.TryGetValue(roleAttributeName, out var role) ? role.ToString() : string.Empty;
         }
 
         public async Task<object> UpdateUser(string userId, UserUpdateModel userToUpdate)
@@ -74,22 +88,37 @@ namespace AzureADB2CApi
             return updatedUser;
         }
 
-        public async Task<object> AddUserRole(string userId, Roles roles)
+        public async Task<bool> AddUserRole(string userId, Roles roles)
         {
-            string roleAttributeName = GetAttributeFullName("Role");
-            var extensionInstance = RoleExtensionInstance(roles);
-
-            var user = new User
+            try
             {
-                AdditionalData = extensionInstance
-            };
+                var user = (User)await GetUser(userId);
+                if (user is null) return false;
 
-            var updatedUser = await GraphServiceClient.Users[userId]
-                .Request()
-                .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
-                .UpdateAsync(user);
+                if (user.IsInRole(_credentials.B2CExtensionAppClientId, "Admin")
+                    || user.IsInRole(_credentials.B2CExtensionAppClientId, "Seller")
+                    || user.IsInRole(_credentials.B2CExtensionAppClientId, "User")) return false;
 
-            return updatedUser;
+                string roleAttributeName = GetAttributeFullName("Role");
+                var extensionInstance = RoleExtensionInstance(roles);
+
+                var userRoleAdd = new User
+                {
+                    AdditionalData = extensionInstance
+                };
+
+                await GraphServiceClient.Users[userId]
+                    .Request()
+                    .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
+                    .UpdateAsync(userRoleAdd);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return false;
+            }
         }
 
         public async Task<List<object>> ListUsers()
