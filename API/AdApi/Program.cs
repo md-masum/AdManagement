@@ -5,7 +5,9 @@ using AdRepository;
 using AdRepository.Settings;
 using AdService;
 using AzureADB2CApi;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Identity.Web;
 using Microsoft.Net.Http.Headers;
 
@@ -49,6 +51,8 @@ builder.Services.Configure<JwtBearerOptions>(
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecksUI().AddInMemoryStorage();
 
 
 var app = builder.Build();
@@ -70,6 +74,11 @@ app.UseCors(policy =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecksUI();
 
 app.MapControllers();
 
