@@ -1,6 +1,5 @@
-﻿using AdCore.Dtos;
+﻿using AdCore.Dto;
 using AdCore.Enums;
-using AdRepository;
 using AdRepository.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

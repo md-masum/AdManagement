@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using AdCore.Dtos;
+using AdCore.Dto;
 using AdCore.Enums;
 using AdCore.Helpers;
 using AdCore.Settings;

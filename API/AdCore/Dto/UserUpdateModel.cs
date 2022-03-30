@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AdCore.Enums;
 
-namespace AdCore.Dtos
+namespace AdCore.Dto
 {
     public class UserUpdateModel
     {
