@@ -1,4 +1,5 @@
 ﻿using AdCore.Dto;
+using AdCore.Response;
 using AdService.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,33 +19,33 @@ namespace AdApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<AdToReturnDto>>> Get()
+        public async Task<ActionResult<ApiResponse<IList<AdDto>>>> Get()
         {
-            return Ok(await _adService.GetAll());
+            return Ok(new ApiResponse<IList<AdDto>>(await _adService.GetAllAsync()));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AdToReturnDto>> GetById(string id)
+        public async Task<ActionResult<ApiResponse<AdDto>>> GetById(string id)
         {
-            return Ok(await _adService.GetById(id));
+            return Ok(new ApiResponse<AdDto>(await _adService.GetByIdAsync(id)));
         }
 
         [HttpPost]
-        public async Task<ActionResult<AdToReturnDto>> Create([FromForm]AdToCreateDto adToCreate)
+        public async Task<ActionResult<AdDto>> Create([FromForm]AdToCreateDto adToCreate)
         {
-            return Ok(await _adService.Create(adToCreate));
+            return Ok(new ApiResponse<AdDto>(await _adService.Create(adToCreate)));
         }
 
         [HttpPut("{id}")]
-        public ActionResult<AdToReturnDto> Update(string id, AdToUpdateDto adToUpdate)
+        public async Task<ActionResult<ApiResponse<AdDto>>> Update(string id, AdToUpdateDto adToUpdate)
         {
-            return Ok(_adService.Update(id, adToUpdate));
+            return Ok(new ApiResponse<AdDto>(await _adService.Update(id, adToUpdate)));
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<bool> Delete(string id)
+        public async Task<ActionResult<ApiResponse<bool>>> Delete(string id)
         {
-            return Ok(_adService.Delete(id));
+            return Ok(new ApiResponse<bool>(await _adService.RemoveAsync(id)));
         }
     }
 }

@@ -5,6 +5,7 @@
     <div class="page">
         <div class="sidebar">
             <NavMenu />
+            <ToastComponent/>
         </div>
 
         <main>
@@ -17,5 +18,8 @@
                 @Body
             </article>
         </main>
+        <div class="d-none">
+            <audio id="notification" src="/Audio/notification.wav"></audio>
+        </div>
     </div>
 </AuthorizeView>

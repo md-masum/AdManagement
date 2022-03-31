@@ -1,8 +1,9 @@
 ﻿using System.Net.Http.Json;
-using AdUi.Service;
-using AdUi.Store;
+using AdCore.Response;
+using AdCore.Service;
+using AdCore.Store;
 
-namespace AdUi.Repository
+namespace AdCore.Repository
 {
     public class BaseHttpClient
     {
@@ -17,14 +18,14 @@ namespace AdUi.Repository
             _store = store;
         }
 
-        public async Task<TResponse> GetAsync<TResponse>(string url)
+        public virtual async Task<TResponse> GetAsync<TResponse>(string url)
         {
             try
             {
                 _store.IsLoading = true;
-                var response = await _client.GetFromJsonAsync<TResponse>(url);
+                var response = await _client.GetFromJsonAsync<ApiResponse<TResponse>>(url);
                 _store.IsLoading = false;
-                return response;
+                return response!.Data;
             }
             catch (Exception e)
             {
@@ -42,9 +43,9 @@ namespace AdUi.Repository
             {
                 _store.IsLoading = true;
                 var response = await _client.PostAsJsonAsync(url, requestBody);
-                var content = await response.Content.ReadFromJsonAsync<TResponse>();
                 _store.IsLoading = false;
-                return content;
+                var content = await response.Content.ReadFromJsonAsync<ApiResponse<TResponse>>();
+                return content!.Data;
             }
             catch (Exception e)
             {
@@ -62,9 +63,9 @@ namespace AdUi.Repository
             {
                 _store.IsLoading = true;
                 var response = await _client.PutAsJsonAsync(url, requestBody);
-                var content = await response.Content.ReadFromJsonAsync<TResponse>();
                 _store.IsLoading = false;
-                return content;
+                var content = await response.Content.ReadFromJsonAsync<ApiResponse<TResponse>>();
+                return content!.Data;
             }
             catch (Exception e)
             {
@@ -82,8 +83,9 @@ namespace AdUi.Repository
             {
                 _store.IsLoading = true;
                 var response = await _client.DeleteAsync(url);
+                var content = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
                 _store.IsLoading = false;
-                return response.IsSuccessStatusCode;
+                return content!.Data;
             }
             catch (Exception e)
             {

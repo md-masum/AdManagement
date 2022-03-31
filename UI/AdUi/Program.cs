@@ -1,14 +1,15 @@
+using AdCore.Middleware;
+using AdCore.Repository;
+using AdCore.Service;
+using AdCore.Store;
 using AdUi;
-using AdUi.Middleware;
-using AdUi.Repository;
-using AdUi.Service;
-using AdUi.Store;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.JSInterop;
 using RestSharp;
+using Syncfusion.Blazor;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -41,11 +42,14 @@ builder.Services.AddSingleton(sp =>
 
 builder.Services.AddLoadingBar();
 builder.Services.AddHttpClientInterceptor();
+builder.Services.AddScoped<HttpInterceptorService>();
 
 builder.Services.AddMsalAuthentication(options =>
 {
     builder.Configuration.Bind("AzureAdB2C", options.ProviderOptions.Authentication);
 }).AddAccountClaimsPrincipalFactory<CustomAccountClaimsPrincipalFactory>();
+
+builder.Services.AddSyncfusionBlazor(options => { options.IgnoreScriptIsolation = true; });
 
 //global services
 builder.Services.AddSingleton<ToastService>();

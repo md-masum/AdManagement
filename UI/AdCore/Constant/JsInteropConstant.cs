@@ -1,4 +1,4 @@
-﻿namespace AdUi.Shared
+﻿namespace AdCore.Constant
 {
     public static class JsInteropConstant
     {

@@ -1,9 +1,8 @@
 ﻿using System.Security.Claims;
-using AdCore.Constant;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 
-namespace AdUi.Middleware
+namespace AdCore.Middleware
 {
     public class CustomAccountClaimsPrincipalFactory : AccountClaimsPrincipalFactory<RemoteUserAccount>
     {
@@ -24,7 +23,7 @@ namespace AdUi.Middleware
                 return user;
             }
 
-            var roleClaims = identity.FindAll(Constant.AdB2CRoleClaimsName).ToArray();
+            var roleClaims = identity.FindAll(Constant.Constant.AdB2CRoleClaimsName).ToArray();
 
             if (!roleClaims.Any())
             {

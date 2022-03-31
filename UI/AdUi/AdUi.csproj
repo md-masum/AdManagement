@@ -7,20 +7,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authorization.Policy" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.3" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="6.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-		<PackageReference Include="RestSharp" Version="107.3.0" />
-		<PackageReference Include="Syncfusion.Blazor" Version="19.4.0.56" />
-		<PackageReference Include="Toolbelt.Blazor.HttpClientInterceptor" Version="10.1.0" />
-		<PackageReference Include="Toolbelt.Blazor.LoadingBar" Version="13.1.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\..\API\AdCore\AdCore.csproj" />
 	</ItemGroup>
 
   <ItemGroup>
@@ -29,7 +17,10 @@
 
   <ItemGroup>
     <Folder Include="Components\User\" />
-    <Folder Include="Repository\Interface\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdCore\AdCore.csproj" />
   </ItemGroup>
 
 </Project>

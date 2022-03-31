@@ -1,20 +1,14 @@
-﻿using AdUi.Shared;
+﻿using AdCore.Constant;
 using Microsoft.JSInterop;
 using Syncfusion.Blazor.Notifications;
 
-namespace AdUi.Service
+namespace AdCore.Service
 {
     public enum ToastPositions
     {
         Center,
         Right,
         Left
-    }
-
-    public enum ToastTypes
-    {
-        Notification,
-        VideoCall
     }
 
     public class ToastService
@@ -29,10 +23,8 @@ namespace AdUi.Service
 
         public SfToast SfToastObj { get; set; }
         public string ToastPosition { get; set; }
-        public ToastTypes ToastTypes { get; set; }
         public void ShowInfo(string message, int timeOut)
         {
-            ToastTypes = ToastTypes.Notification;
             var toastModel = new ToastModel
             {
                 Title = "Information!",
@@ -46,7 +38,6 @@ namespace AdUi.Service
 
         public void ShowWarn(string message, int timeOut)
         {
-            ToastTypes = ToastTypes.Notification;
             var toastModel = new ToastModel
             {
                 Title = "Warning!",
@@ -60,7 +51,6 @@ namespace AdUi.Service
 
         public void ShowSuccess(string message, int timeOut)
         {
-            ToastTypes = ToastTypes.Notification;
             var toastModel = new ToastModel
             {
                 Title = "Success!",
@@ -74,7 +64,6 @@ namespace AdUi.Service
 
         public void ShowError(string message, int timeOut)
         {
-            ToastTypes = ToastTypes.Notification;
             var toastModel = new ToastModel
             {
                 Title = "Error!",

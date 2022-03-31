@@ -3,9 +3,8 @@ using AdCore.MapperProfile;
 
 namespace AdCore.Dto
 {
-    public class AdToUpdateDto : IMapFrom<Ad>
+    public class AdToUpdateDto : BaseDto, IMapFrom<Ad>
     {
-        public string Id { get; set; }
         public string Name { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

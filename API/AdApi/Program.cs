@@ -1,16 +1,20 @@
 using System.Security.Claims;
 using AdApi.Service;
 using AdCore.Interface;
+using AdCore.Response;
+using AdCore.Services;
 using AdCore.Settings;
 using AdRepository;
 using AdRepository.Authentication;
-using AdService;
+using AdService.Base;
 using AdService.Interface;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Identity.Web;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
 
@@ -36,8 +40,6 @@ builder.Host.UseSerilog((ctx, lc) => lc
 #endregion
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<IAdService, AdService.AdService>();
-builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 #region CosmosDB
@@ -72,6 +74,21 @@ builder.Services.Configure<JwtBearerOptions>(
                     opt.Principal?.AddIdentity(appIdentity);
                 }
                 return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                var result = JsonConvert.SerializeObject(new ApiResponse<string>("You are not Authorized"));
+                return context.Response.WriteAsync(result);
+            },
+            OnForbidden = context =>
+            {
+                context.Response.StatusCode = 403;
+                context.Response.ContentType = "application/json";
+                var result = JsonConvert.SerializeObject(new ApiResponse<string>("You are not authorized to access this resource"));
+                return context.Response.WriteAsync(result);
             }
         };
     });
@@ -81,12 +98,58 @@ builder.Services.Configure<JwtBearerOptions>(
 #region Swagger
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Ad Management",
+        Version = "v1",
+        Description = "This Api will be responsible for overall data distribution and authorization.",
+    });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        Description = "Input your Bearer token in this format - Bearer {your token here} to access this API",
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer",
+                },
+                Scheme = "Bearer",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+            }, new List<string>()
+        },
+    });
+});
 #endregion
 
 #region HealthCheck
 builder.Services.AddHealthChecks();
 builder.Services.AddHealthChecksUI().AddInMemoryStorage();
+#endregion
+
+#region Mail Service
+builder.Services.AddSingleton(builder.Configuration.GetSection("EmailConfiguration").Get<MailSettings>());
+builder.Services.AddSingleton<IMailService, MailService>();
+#endregion
+
+#region Services
+builder.Services.AddScoped(typeof(IBaseService<,>), typeof(BaseService<,>));
+builder.Services.AddScoped<IAdService, AdService.AdService>();
+builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
+builder.Services.AddTransient<IFileUploadService, FileUploadService>();
 #endregion
 
 var app = builder.Build();
@@ -97,7 +160,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseCors(policy =>

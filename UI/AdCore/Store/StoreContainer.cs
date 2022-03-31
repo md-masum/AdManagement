@@ -1,7 +1,7 @@
-﻿using AdUi.Shared;
+﻿using AdCore.Constant;
 using Microsoft.JSInterop;
 
-namespace AdUi.Store
+namespace AdCore.Store
 {
     public class StoreContainer
     {

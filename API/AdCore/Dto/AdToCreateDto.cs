@@ -3,7 +3,7 @@ using AdCore.MapperProfile;
 
 namespace AdCore.Dto
 {
-    public class AdToCreateDto : IMapFrom<Ad>
+    public class AdToCreateDto : BaseDto, IMapFrom<Ad>
     {
         public string Name { get; set; }
         public DateTime? StartDate { get; set; }
