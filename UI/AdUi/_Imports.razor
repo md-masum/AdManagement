@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using AdCore.Repository
 @using AdCore.Service
 @using AdCore.Store
 @using AdUi.Components
@@ -20,7 +21,7 @@
 @inject RestClient _httpAnonymousClient
 @inject NavigationManager _navigationManager
 @inject SignOutSessionStateManager _signOutManager
-@inject HttpClient _httpAuthorizeClient
+@inject BaseHttpClient _httpAuthorizeClient
 @inject HttpInterceptorService _httpInterceptor
 @inject IJSInProcessRuntime _js
 @inject StoreContainer _store

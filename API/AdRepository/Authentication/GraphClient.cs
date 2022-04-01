@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using AdCore.Dto;
 using AdCore.Enums;
+using AdCore.Exceptions;
 using AdCore.Helpers;
 using AdCore.Settings;
 using Azure.Identity;
@@ -34,26 +35,23 @@ namespace AdRepository.Authentication
             GraphServiceClient = new GraphServiceClient(clientSecretCredential, scopes);
         }
 
-        public async Task<object> GetAllUser()
+        public async Task<IList<UserDto>> GetAllUser()
         {
             string roleAttributeName = GetAttributeFullName("Role");
             var users = await GraphServiceClient.Users
                 .Request()
                 .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
                 .GetAsync();
-            return users;
+
+            return users.Select(GetUserEntity).ToList();
         }
 
-        public async Task<object> GetUser(string userId)
+        public async Task<UserDto> GetUserById(string userId)
         {
             try
             {
-                string roleAttributeName = GetAttributeFullName("Role");
-                var user = await GraphServiceClient.Users[userId]
-                    .Request()
-                    .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
-                    .GetAsync();
-                return user;
+                var user = await GetUser(userId);
+                return GetUserEntity(user);
             }
             catch (Exception e)
             {
@@ -62,13 +60,14 @@ namespace AdRepository.Authentication
             }
         }
 
-        public string GetUserRole(User user)
+        public async Task<string> GetUserRoleById(string userId)
         {
+            var user = await GetUser(userId);
             string roleAttributeName = GetAttributeFullName("Role");
             return user.AdditionalData.TryGetValue(roleAttributeName, out var role) ? role.ToString() : string.Empty;
         }
 
-        public async Task<object> UpdateUser(string userId, UserUpdateModel userToUpdate)
+        public async Task UpdateUser(string userId, UserUpdateModel userToUpdate)
         {
             string roleAttributeName = GetAttributeFullName("Role");
             var extensionInstance = RoleExtensionInstance(userToUpdate.Role);
@@ -80,20 +79,17 @@ namespace AdRepository.Authentication
                 DisplayName = userToUpdate.DisplayName,
                 AdditionalData = extensionInstance
             };
-            var updatedUser = await GraphServiceClient.Users[userId]
+            await GraphServiceClient.Users[userId]
                 .Request()
                 .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
                 .UpdateAsync(user);
-
-            return updatedUser;
         }
 
         public async Task<bool> AddUserRole(string userId, Roles roles)
         {
             try
             {
-                var user = (User)await GetUser(userId);
-                if (user is null) return false;
+                var user = await GetUser(userId);
 
                 if (user.IsInRole(_credentials.B2CExtensionAppClientId, "Admin")
                     || user.IsInRole(_credentials.B2CExtensionAppClientId, "Seller")
@@ -121,34 +117,30 @@ namespace AdRepository.Authentication
             }
         }
 
-        public async Task<List<object>> ListUsers()
+        public async Task<IList<UserDto>> ListUsers()
         {
             _logger.LogInformation("Getting list of users...");
             string roleAttributeName = GetAttributeFullName("Role");
 
-            List<object> userList = new List<object>();
+            List<UserDto> userList = new List<UserDto>();
 
             try
             {
-                // Get all users
                 var users = await GraphServiceClient.Users
                     .Request()
                     .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
                     .GetAsync();
-
-                // Iterate over all the users in the directory
+                
                 var pageIterator = PageIterator<User>
                     .CreatePageIterator(
                         GraphServiceClient,
                         users,
-                        // Callback executed for each user in the collection
                         (user) =>
                         {
                             _logger.LogInformation(user.DisplayName);
-                            userList.Add(user);
+                            userList.Add(GetUserEntity(user));
                             return true;
                         },
-                        // Used to configure subsequent page requests
                         (req) =>
                         {
                             _logger.LogInformation($"Reading next page of users...");
@@ -161,6 +153,7 @@ namespace AdRepository.Authentication
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                throw new CustomException("Something went wrong to retrieve user list", ex);
             }
 
             return userList;
@@ -181,6 +174,7 @@ namespace AdRepository.Authentication
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, ex);
+                throw new CustomException("Something went wrong to delete user by ID", ex);
             }
         }
 
@@ -213,15 +207,13 @@ namespace AdRepository.Authentication
             }
         }
 
-        public async Task<object> CreateUserWithCustomAttribute(UserModel createUserObj)
+        public async Task<UserDto> CreateUserWithCustomAttribute(UserModel createUserObj)
         {
             if (string.IsNullOrWhiteSpace(_credentials.B2CExtensionAppClientId))
             {
                 throw new ArgumentException("B2C Extension App ClientId (ApplicationId) is missing in the appsettings.json. Get it from the App Registrations blade in the Azure portal. The app registration has the name 'b2c-extensions-app. Do not modify. Used by AADB2C for storing user data.'.", nameof(GraphClient));
             }
 
-            // Create custom attribute from azure B2C portal
-            // Declare the names of the custom attributes
             string roleAttributeName = GetAttributeFullName("Role");
             var extensionInstance = RoleExtensionInstance(createUserObj.Role);
 
@@ -269,7 +261,7 @@ namespace AdRepository.Authentication
                     _logger.LogInformation(JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
                 }
 
-                return result;
+                return GetUserEntity(result);
             }
             catch (ServiceException ex)
             {
@@ -277,6 +269,7 @@ namespace AdRepository.Authentication
                 {
                     _logger.LogError($"Have you created the custom attributes in your tenant?");
                     _logger.LogError(ex.Message);
+                    throw new CustomException("Something went wrong to create user, Have you created the custom attributes in your tenant?", ex);
                 }
 
                 throw;
@@ -284,26 +277,52 @@ namespace AdRepository.Authentication
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw;
+                throw new CustomException("Something went wrong to create user", ex);
             }
         }
 
+        #region Helper Method
+        private UserDto GetUserEntity(User userObject)
+        {
+            return new UserDto
+            {
+                Id = userObject.Id,
+                FirstName = userObject.GivenName,
+                LastName = userObject.Surname,
+                DisplayName = userObject.DisplayName,
+                Email = userObject.Identities.FirstOrDefault(c => c.SignInType == "emailAddress")?.IssuerAssignedId,
+                Role = (Roles)Enum.Parse(typeof(Roles), GetUserRole(userObject))
+            };
+        }
+        private string GetUserRole(User user)
+        {
+            string roleAttributeName = GetAttributeFullName("Role");
+            return user.AdditionalData.TryGetValue(roleAttributeName, out var role) ? role.ToString() : string.Empty;
+        }
+        private async Task<User> GetUser(string userId)
+        {
+            string roleAttributeName = GetAttributeFullName("Role");
+            var user = await GraphServiceClient.Users[userId]
+                .Request()
+                .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
+                .GetAsync();
+            if (user == null) throw new NotFoundException("No User found by provided ID");
+            return user;
+        }
         private string GetAttributeFullName(string attributeName)
         {
-            // Get the complete name of the custom attribute (Azure AD extension)
             B2CCustomAttributeHelper helper = new B2CCustomAttributeHelper(_credentials.B2CExtensionAppClientId);
-            _logger.LogInformation($"Create a user with the custom attributes '{attributeName}' (string)");
             return helper.GetCompleteAttributeName(attributeName);
         }
-
         private IDictionary<string, object> RoleExtensionInstance(Roles roles)
         {
             string roleAttributeName = GetAttributeFullName("Role");
 
-            // Fill custom attributes
             IDictionary<string, object> extensionInstance = new Dictionary<string, object>();
             extensionInstance.Add(roleAttributeName, roles.ToString());
             return extensionInstance;
         }
+        #endregion
+
     }
 }

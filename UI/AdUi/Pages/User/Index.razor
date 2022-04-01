@@ -4,7 +4,7 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Hello, This is user panel</h1>
 
 Welcome to your new app. <br/>
 @if (_forecasts is not null)
@@ -24,9 +24,11 @@ Welcome to your new app. <br/>
 
     protected override async Task OnInitializedAsync()
     {
+        _httpInterceptor.RegisterEvent();
         AssignUserTheme((await AuthenticationState).User);
 
         _forecasts = await _httpAnonymousClient.GetJsonAsync<string[]>("WeatherForecast");
+        // _forecasts = await _httpAuthorizeClient.GetAsync<string[]>("WeatherForecast");
     }
 
     public void AssignUserTheme(ClaimsPrincipal user)
@@ -38,4 +40,6 @@ Welcome to your new app. <br/>
         else
             _navigationManager.NavigateTo("/");
     }
+
+    public void DisposeAsync() => _httpInterceptor.DisposeEvent();
 }

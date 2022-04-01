@@ -4,12 +4,11 @@ using AdCore.Response;
 using AdRepository.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph;
 
 namespace AdApi.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -21,54 +20,54 @@ namespace AdApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<List<object>>>> GetAllUser()
+        public async Task<ActionResult<ApiResponse<List<UserDto>>>> GetAllUser()
         {
-            return Ok(new ApiResponse<List<object>>(await _graphClient.ListUsers()));
+            return Ok(new ApiResponse<IList<UserDto>>(await _graphClient.ListUsers()));
         }
 
         [HttpGet("{userId}")]
-        public async Task<ActionResult<ApiResponse<object>>> GetUserById(string userId)
+        public async Task<ActionResult<ApiResponse<UserDto>>> GetUserById(string userId)
         {
-            return Ok(new ApiResponse<object>(await _graphClient.GetUser(userId)));
+            return Ok(new ApiResponse<UserDto>(await _graphClient.GetUserById(userId)));
         }
 
         [HttpGet("user/{userId}/role")]
         public async Task<ActionResult<ApiResponse<string>>> GetUserRoleById(string userId)
         {
-            var user = (User)await _graphClient.GetUser(userId);
-            return Ok(new ApiResponse<string>(_graphClient.GetUserRole(user)));
+            return Ok(new ApiResponse<string>(await _graphClient.GetUserRoleById(userId)));
         }
 
-        [HttpGet("user/{userId}/role/{roleId}")]
+        [HttpGet("adRole/user/{userId}/role/{roleId}")]
         public async Task<ActionResult<ApiResponse<bool>>> UpdateUserRole(string userId, Roles roleId)
         {
             return Ok(new ApiResponse<bool>(await _graphClient.AddUserRole(userId, roleId)));
         }
 
         [AllowAnonymous]
-        [HttpGet("user/{userId}")]
+        [HttpGet("adRole/user/{userId}")]
         public async Task<ActionResult<ApiResponse<bool>>> AddUserRole(string userId)
         {
             return Ok(new ApiResponse<bool>(await _graphClient.AddUserRole(userId, Roles.User)));
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<object>>> CreateUser([FromBody]UserModel user)
+        public async Task<ActionResult<ApiResponse<UserDto>>> CreateUser([FromBody]UserModel user)
         {
-            return Ok(new ApiResponse<object>(await _graphClient.CreateUserWithCustomAttribute(user)));
+            return Ok(new ApiResponse<UserDto>(await _graphClient.CreateUserWithCustomAttribute(user)));
         }
         
         [HttpPut("{userId}")]
-        public async Task<ActionResult<ApiResponse<object>>> UpdateUser(string userId, UserUpdateModel user)
+        public async Task<IActionResult> UpdateUser(string userId, UserUpdateModel user)
         {
-            return Ok(new ApiResponse<object>(await _graphClient.UpdateUser(userId, user)));
+            await _graphClient.UpdateUser(userId, user);
+            return NoContent();
         }
         
         [HttpDelete("{userId}")]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteUser(string userId)
         {
             await _graphClient.DeleteUserById(userId);
-            return Ok(new ApiResponse<bool>(true));
+            return NoContent();
         }
     }
 }
