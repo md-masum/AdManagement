@@ -1,7 +1,5 @@
 ﻿@page "/"
-@using System.Security.Claims
-@using AdCore.Enums
-
+@implements IDisposable
 <PageTitle>Index</PageTitle>
 
 <h1>Hello, This is user panel</h1>
@@ -41,5 +39,5 @@ Welcome to your new app. <br/>
             _navigationManager.NavigateTo("/");
     }
 
-    public void DisposeAsync() => _httpInterceptor.DisposeEvent();
+    public void Dispose() => _httpInterceptor.DisposeEvent();
 }
