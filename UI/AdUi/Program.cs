@@ -1,7 +1,6 @@
 using AdCore.Middleware;
 using AdCore.Repository;
 using AdCore.Service;
-using AdCore.Store;
 using AdUi;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
@@ -11,6 +10,7 @@ using Microsoft.JSInterop;
 using RestSharp;
 using Syncfusion.Blazor;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
+using StoreContainer = AdCore.Store.StoreContainer;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

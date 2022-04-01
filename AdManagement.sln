@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{0042780E-920
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdUi", "UI\AdUi\AdUi.csproj", "{A42A514B-421A-4987-8493-C492DB56147D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdCore", "UI\AdCore\AdCore.csproj", "{2E06B040-E73D-465F-BC91-24A690A8E78F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdCore", "UI\AdCore\AdCore.csproj", "{2E06B040-E73D-465F-BC91-24A690A8E78F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

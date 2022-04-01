@@ -14,10 +14,21 @@
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+    <style type="text/css">
+        .container-temp {
+            height: 100vh;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div class="container container-temp d-flex justify-content-center align-items-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.

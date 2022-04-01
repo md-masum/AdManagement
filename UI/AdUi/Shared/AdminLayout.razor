@@ -2,24 +2,29 @@
 @inherits LayoutComponentBase
 
 <AuthorizeView Roles="Admin">
-    <div class="page">
-        <div class="sidebar">
-            <NavMenu />
-            <ToastComponent/>
-        </div>
-
-        <main>
-            <div class="top-row px-4 auth">
-                <LoginDisplay />
-                <a>Admin</a>
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu/>
+                <ToastComponent/>
             </div>
 
-            <article class="content px-4">
-                @Body
-            </article>
-        </main>
-        <div class="d-none">
-            <audio id="notification" src="/Audio/notification.wav"></audio>
+            <main>
+                <div class="top-row px-4 auth">
+                    <LoginDisplay/>
+                    <a>Admin</a>
+                </div>
+
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
+            <div class="d-none">
+                <audio id="notification" src="/Audio/notification.wav"></audio>
+            </div>
         </div>
-    </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You don't have permission to access this page</p>
+    </NotAuthorized>
 </AuthorizeView>
