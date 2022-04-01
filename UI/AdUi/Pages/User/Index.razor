@@ -26,7 +26,7 @@ Welcome to your new app. <br/>
     {
         AssignUserTheme((await AuthenticationState).User);
 
-        _forecasts = await _restClient.GetJsonAsync<string[]>("WeatherForecast");
+        _forecasts = await _httpAnonymousClient.GetJsonAsync<string[]>("WeatherForecast");
     }
 
     public void AssignUserTheme(ClaimsPrincipal user)

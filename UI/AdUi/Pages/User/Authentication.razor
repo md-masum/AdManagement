@@ -19,7 +19,7 @@
                 var userId = user.FindFirst("sub")?.Value;
                 if (userId is not null)
                 {
-                    await _restClient.GetJsonAsync<bool>($"api/Auth/user/{userId}");
+                    await _httpAnonymousClient.GetJsonAsync<bool>($"api/Auth/user/{userId}");
                 }
             }
 
