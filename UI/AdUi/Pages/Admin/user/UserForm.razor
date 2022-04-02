@@ -1,0 +1,60 @@
+﻿@using AdCore.Models.Auth
+<EditForm Model="User" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label>First Name:</label>
+        <InputText class="form-control" @bind-Value="User.FirstName"></InputText>
+    </div>
+    <div class="mb-3">
+        <label>Last Name:</label>
+        <InputText class="form-control" @bind-Value="User.LastName"></InputText>
+    </div>
+    <div class="mb-3">
+        <label>Display Name:</label>
+        <InputText class="form-control" @bind-Value="User.DisplayName"></InputText>
+    </div>
+    <div class="mb-3">
+        <label>Email:</label>
+        <InputText class="form-control" readonly="@IsUpdateForm" @bind-Value="User.Email"></InputText>
+    </div>
+    <div class="mb-3">
+        <label>Role:</label>
+        <InputSelect class="form-select" @bind-Value="User.Role">
+            <option value="@Roles.Admin">@Roles.Admin.ToString()</option>
+            <option value="@Roles.Seller">@Roles.Seller.ToString()</option>
+            <option value="@Roles.User">@Roles.User.ToString()</option>
+        </InputSelect>
+    </div>
+    @if (!IsUpdateForm)
+    {
+        <div class="mb-3">
+            <label>Password:</label>
+            <InputText class="form-control" type="password" @bind-Value="User.Password"></InputText>
+        </div>
+        <div class="mb-3">
+            <label>Confirm Password:</label>
+            <InputText class="form-control" type="password" @bind-Value="User.ConfirmPassword"></InputText>
+        </div>
+    }
+    <button class="btn btn-primary">@ButtonName()</button>
+</EditForm>
+
+@code {
+    [Parameter] public UserModel User { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public bool IsUpdateForm { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (IsUpdateForm)
+        {
+            User.Password = Guid.NewGuid().ToString();
+            User.ConfirmPassword = User.Password;
+        }
+    }
+
+    private string ButtonName()
+    {
+        return IsUpdateForm ? "Update" : "Create";
+    }
+}

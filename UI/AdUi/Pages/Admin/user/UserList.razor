@@ -1,6 +1,7 @@
 ﻿@page "/admin/user"
 
 <h1>User List</H1>
+<NavLink class="btn btn-primary" href="admin/user/create">Create User</NavLink>
 <div class="table-responsive">
     <table class="table table-bordered table-striped table-hover">
         <thead>
@@ -25,8 +26,8 @@
                     <td>@user.Email</td>
                     <td>@user.Role.ToString()</td>
                     <td>
-                        <button>Update</button>
-                        <button>Delete</button>
+                        <button class="btn btn-sm btn-info" @onclick="() => OnUserEdit(user.Id)">Update</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => OnUserDelete(user.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -36,13 +37,13 @@
             if (ApplicationUsers?.Count == 0)
             {
                 <tr>
-                    <td colspan="5">No User Found</td>
+                    <td colspan="6">No User Found</td>
                 </tr>
             }
             else
             {
                 <tr>
-                    <td colspan="5">Loading...</td>
+                    <td colspan="6">Loading...</td>
                 </tr>
             }
         }

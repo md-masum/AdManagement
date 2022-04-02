@@ -1,6 +1,6 @@
 ﻿using AdCore.Models.Auth;
 
-namespace AdUi.Pages.Admin
+namespace AdUi.Pages.Admin.user
 {
     public partial class UserList : IDisposable
     {
@@ -12,6 +12,20 @@ namespace AdUi.Pages.Admin
 
             var userList = await _httpAuthorizeClient.GetAsync<List<UserDto>>("/api/auth");
             ApplicationUsers = userList is not null && userList.Any() ? userList : new List<UserDto>();
+        }
+
+        private void OnUserEdit(string userId)
+        {
+            _navigationManager.NavigateTo($"/admin/user/{userId}");
+        }
+        private async Task OnUserDelete(string userId)
+        {
+            await _httpAuthorizeClient.DeleteAsync($"/api/auth/{userId}");
+            var deletedUser = ApplicationUsers.FirstOrDefault(c => c.Id == userId);
+            if (deletedUser is not null)
+            {
+                ApplicationUsers.Remove(deletedUser);
+            }
         }
 
         public void Dispose()

@@ -1,0 +1,11 @@
+﻿@page "/admin/user/{UserId}"
+
+<h1>User Details <span><NavLink class="text-sm-start text-muted" href="admin/user">user list</NavLink></span></H1>
+    @if (UserModel is null)
+    {
+        <p>No User Found</p>
+    }
+    else
+    {
+        <UserForm User="UserModel" OnValidSubmit="UpdateUser" IsUpdateForm="true"></UserForm>
+    }

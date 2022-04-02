@@ -60,14 +60,14 @@ namespace AdApi.Controllers
         public async Task<IActionResult> UpdateUser(string userId, UserUpdateModel user)
         {
             await _graphClient.UpdateUser(userId, user);
-            return NoContent();
+            return Ok(new ApiResponse<bool>(true));
         }
         
         [HttpDelete("{userId}")]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteUser(string userId)
         {
             await _graphClient.DeleteUserById(userId);
-            return NoContent();
+            return Ok(new ApiResponse<bool>(true));
         }
     }
 }
