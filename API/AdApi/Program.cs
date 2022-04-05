@@ -41,6 +41,7 @@ builder.Host.UseSerilog((ctx, lc) => lc
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddMemoryCache();
 
 #region CosmosDB
 await builder.Services.InitializeCosmosClientAsync(builder.Configuration.GetSection("CosmosDb"));
@@ -147,9 +148,10 @@ builder.Services.AddSingleton<IMailService, MailService>();
 
 #region Services
 builder.Services.AddScoped(typeof(IBaseService<,>), typeof(BaseService<,>));
+builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<IAdService, AdService.AdService>();
 builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
-builder.Services.AddTransient<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 #endregion
 
 var app = builder.Build();

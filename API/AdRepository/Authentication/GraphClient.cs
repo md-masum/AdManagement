@@ -1,8 +1,10 @@
 ﻿using System.Text.Json;
+using AdCore.Constant;
 using AdCore.Dto;
 using AdCore.Enums;
 using AdCore.Exceptions;
 using AdCore.Helpers;
+using AdCore.Interface;
 using AdCore.Settings;
 using Azure.Identity;
 using Microsoft.Extensions.Logging;
@@ -17,11 +19,13 @@ namespace AdRepository.Authentication
     {
         private readonly B2CCredentials _credentials;
         private readonly ILogger<GraphClient> _logger;
+        private readonly ICacheService _cacheService;
         public virtual GraphServiceClient GraphServiceClient { get; }
-        public GraphClient(B2CCredentials credentials, ILogger<GraphClient> logger)
+        public GraphClient(B2CCredentials credentials, ILogger<GraphClient> logger, ICacheService cacheService)
         {
             _credentials = credentials;
             _logger = logger;
+            _cacheService = cacheService;
             var scopes = new[] { "https://graph.microsoft.com/.default" };
 
             var options = new TokenCredentialOptions
@@ -48,10 +52,14 @@ namespace AdRepository.Authentication
 
         public async Task<UserDto> GetUserById(string userId)
         {
+            var cacheValue = _cacheService.Get<UserDto>(nameof(UserDto));
+            if(cacheValue is not null) return cacheValue;
+
             try
             {
-                var user = await GetUser(userId);
-                return GetUserEntity(user);
+                var user = GetUserEntity(await GetUser(userId));
+                _cacheService.Set(nameof(UserDto), user);
+                return user;
             }
             catch (Exception e)
             {
@@ -83,6 +91,8 @@ namespace AdRepository.Authentication
                 .Request()
                 .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
                 .UpdateAsync(user);
+            _cacheService.Remove(nameof(UserDto));
+            _cacheService.Remove(CacheKey.UserList);
         }
 
         public async Task<bool> AddUserRole(string userId, Roles roles)
@@ -108,6 +118,9 @@ namespace AdRepository.Authentication
                     .Select($"id,givenName,surName,displayName,identities,{roleAttributeName}")
                     .UpdateAsync(userRoleAdd);
 
+                _cacheService.Remove(nameof(UserDto));
+                _cacheService.Remove(CacheKey.UserList);
+
                 return true;
             }
             catch (Exception e)
@@ -123,7 +136,8 @@ namespace AdRepository.Authentication
             string roleAttributeName = GetAttributeFullName("Role");
 
             List<UserDto> userList = new List<UserDto>();
-
+            var cacheData = _cacheService.Get<List<UserDto>>(CacheKey.UserList);
+            if (cacheData is not null) return cacheData;
             try
             {
                 var users = await GraphServiceClient.Users
@@ -155,7 +169,7 @@ namespace AdRepository.Authentication
                 _logger.LogError(ex.Message);
                 throw new CustomException("Something went wrong to retrieve user list", ex);
             }
-
+            _cacheService.Set(CacheKey.UserList, userList);
             return userList;
         }
 
@@ -168,6 +182,8 @@ namespace AdRepository.Authentication
                 await GraphServiceClient.Users[userId]
                     .Request()
                     .DeleteAsync();
+                _cacheService.Remove(nameof(UserDto));
+                _cacheService.Remove(CacheKey.UserList);
 
                 _logger.LogInformation($"User with object ID '{userId}' successfully deleted.");
             }
@@ -260,7 +276,8 @@ namespace AdRepository.Authentication
                     _logger.LogInformation($"Role: {result.AdditionalData[roleAttributeName]}");
                     _logger.LogInformation(JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
                 }
-
+                _cacheService.Remove(nameof(UserDto));
+                _cacheService.Remove(CacheKey.UserList);
                 return GetUserEntity(result);
             }
             catch (ServiceException ex)
