@@ -1,10 +1,13 @@
 ﻿using AdCore.Models.Auth;
+using AdUi.Components;
 
 namespace AdUi.Pages.Admin.user
 {
     public partial class UserList : IDisposable
     {
         public List<UserDto> ApplicationUsers { get; set; }
+        protected Confirm DeleteConfirmation { get; set; }
+        
         protected override async Task OnInitializedAsync()
         {
             _store.OnChange += StateHasChanged;
@@ -18,6 +21,7 @@ namespace AdUi.Pages.Admin.user
         {
             _navigationManager.NavigateTo($"/admin/user/{userId}");
         }
+
         private async Task OnUserDelete(string userId)
         {
             await _httpAuthorizeClient.DeleteAsync($"/api/auth/{userId}");
@@ -26,6 +30,11 @@ namespace AdUi.Pages.Admin.user
             {
                 ApplicationUsers.Remove(deletedUser);
             }
+        }
+
+        private void DeleteCLick(string userId)
+        {
+            DeleteConfirmation.Show(userId);
         }
 
         public void Dispose()

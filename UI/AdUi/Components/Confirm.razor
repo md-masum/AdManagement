@@ -1,0 +1,21 @@
+﻿@using Syncfusion.Blazor.Popups
+
+@if (ConfirmDlgVisible)
+{
+    <SfDialog @bind-Visible="@ConfirmDlgVisible" EnableResize="true" ResizeHandles="@DialogResizeDirections" AllowDragging="true" Width="400px" IsModal="true" ShowCloseIcon="true">
+        <DialogTemplates>
+            <Header>
+                @Title
+            </Header>
+            <Content>
+                @Content
+            </Content>
+        </DialogTemplates>
+        <DialogEvents Closed="@HideDialog"></DialogEvents>
+        <DialogButtons>
+            <DialogButton Content="Yes" IsPrimary="true" OnClick="() => OnConfirmChange(true)" />
+            <DialogButton Content="No" OnClick="() => OnConfirmChange(false)" />
+        </DialogButtons>
+        <DialogAnimationSettings Effect="@DialogEffect.Zoom"></DialogAnimationSettings>
+    </SfDialog>
+}
