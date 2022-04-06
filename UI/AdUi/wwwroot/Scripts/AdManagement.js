@@ -8,6 +8,10 @@ adManagement.setSessionStorage = (key, data) => {
     return sessionStorage.setItem(key, data);
 }
 
+adManagement.removeSessionStorage = (key) => {
+    return sessionStorage.removeItem(key);
+}
+
 adManagement.scrollToBottom = (id) => {
     var div = document.getElementById(id);
     if (div && div.scrollHeight && div.clientHeight) {

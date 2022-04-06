@@ -208,19 +208,11 @@ namespace AdRepository.Authentication
                 }
             };
 
-            try
-            {
-                // Update user by object ID
-                await GraphServiceClient.Users[userId]
-                    .Request()
-                    .UpdateAsync(user);
-
-                Console.WriteLine($"User with object ID '{userId}' successfully updated.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, ex);
-            }
+            // Update user by object ID
+            await GraphServiceClient.Users[userId]
+                .Request()
+                .UpdateAsync(user);
+            Console.WriteLine($"User with object ID '{userId}' successfully updated.");
         }
 
         public async Task<UserDto> CreateUserWithCustomAttribute(UserModel createUserObj)

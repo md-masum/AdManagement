@@ -1,6 +1,7 @@
 ﻿@page "/authentication/{action}"
+@using AdCore.Constant
 
-<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="OnLogInSucceeded" />
+<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="OnLogInSucceeded" OnLogOutSucceeded="() => _js.InvokeVoid(JsInteropConstant.RemoveSessionStorage, JsInteropConstant.CurrentUserId)" />
 
 @code{
     [Parameter] public string Action { get; set; }
@@ -17,6 +18,7 @@
             if (userRoleAttribute is null)
             {
                 var userId = user.FindFirst("sub")?.Value;
+                _js.InvokeVoid(JsInteropConstant.SetSessionStorage, JsInteropConstant.CurrentUserId, userId);
                 if (userId is not null)
                 {
                     await _httpAnonymousClient.GetJsonAsync<bool>($"api/Auth/user/{userId}");
