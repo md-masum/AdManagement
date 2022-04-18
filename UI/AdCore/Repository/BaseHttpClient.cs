@@ -1,4 +1,7 @@
-﻿using System.Net.Http.Json;
+﻿using System.ComponentModel;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using AdCore.Extensions;
 using AdCore.Response;
 using AdCore.Service;
 using AdCore.Store;
@@ -37,7 +40,49 @@ namespace AdCore.Repository
             
         }
 
-        public async Task<TResponse> PostAsync<TResponse, TRequest>(string url, TRequest requestBody)
+        public async Task<TResponse> PostAsync<TResponse, TRequest>(string url, TRequest requestBody, bool isMultipartFormData = false)
+        {
+            if (isMultipartFormData)
+            {
+                return await PostMultipartFormDataAsync<TResponse, TRequest>(url, requestBody);
+            }
+
+            return await PostFormBodyAsync<TResponse, TRequest>(url, requestBody);
+        }
+
+        private async Task<TResponse> PostMultipartFormDataAsync<TResponse, TRequest>(string url, TRequest requestBody)
+        {
+            try
+            {
+                using var multipartFormContent = new MultipartFormDataContent();
+                // multipartFormContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+                foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(requestBody))
+                {
+                    object value = property.GetValue(requestBody);
+                    if (value is string)
+                    {
+                        // dictionary.Add(property.Name, (T)value);
+                        multipartFormContent.Add(new StringContent(value?.ToString()!), name:property.Name);
+                    }
+                }
+
+                _store.IsLoading = true;
+                var response = await _client.PostAsync(url, multipartFormContent);
+                _store.IsLoading = false;
+                var content = await response.Content.ReadFromJsonAsync<ApiResponse<TResponse>>();
+                return content!.Data;
+            }
+            catch (Exception e)
+            {
+                _store.IsLoading = false;
+                Console.WriteLine(e);
+                _toastService.ShowError(e.Message, 5000);
+                throw;
+            }
+
+        }
+
+        private async Task<TResponse> PostFormBodyAsync<TResponse, TRequest>(string url, TRequest requestBody)
         {
             try
             {

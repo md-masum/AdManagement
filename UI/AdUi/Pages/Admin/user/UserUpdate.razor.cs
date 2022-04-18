@@ -1,6 +1,6 @@
 ﻿using AdCore.Models.Auth;
 using Microsoft.AspNetCore.Components;
-using Newtonsoft.Json;
+using Microsoft.JSInterop;
 
 namespace AdUi.Pages.Admin.user
 {
@@ -9,17 +9,21 @@ namespace AdUi.Pages.Admin.user
         [Parameter]
         public string UserId { get; set; }
         public UserModel UserModel { get; set; }
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             _store.OnChange += StateHasChanged;
             _httpInterceptor.RegisterEvent();
 
+            
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
             var user = await _httpAuthorizeClient.GetAsync<UserDto>($"/api/auth/{UserId}");
             if (user is not null)
             {
                 UserModel = _mapper.Map<UserModel>(user);
             }
-
         }
 
         public async Task UpdateUser()

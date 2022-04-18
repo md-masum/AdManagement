@@ -52,13 +52,9 @@ namespace AdRepository.Authentication
 
         public async Task<UserDto> GetUserById(string userId)
         {
-            var cacheValue = _cacheService.Get<UserDto>(nameof(UserDto));
-            if(cacheValue is not null) return cacheValue;
-
             try
             {
                 var user = GetUserEntity(await GetUser(userId));
-                _cacheService.Set(nameof(UserDto), user);
                 return user;
             }
             catch (Exception e)

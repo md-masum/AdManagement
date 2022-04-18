@@ -50,6 +50,13 @@ namespace AdApi.Controllers
             return Ok(new ApiResponse<bool>(await _graphClient.AddUserRole(userId, Roles.User)));
         }
 
+        [HttpPost("changeUserPassword/{userId}")]
+        public async Task<ActionResult<ApiResponse<bool>>> ChangeUserPassword(string userId, [FromBody] string password)
+        {
+            await _graphClient.SetPasswordByUserId(userId, password);
+            return Ok(new ApiResponse<bool>(true));
+        }
+
         [HttpPost]
         public async Task<ActionResult<ApiResponse<UserDto>>> CreateUser([FromBody]UserModel user)
         {

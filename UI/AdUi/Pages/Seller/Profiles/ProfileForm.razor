@@ -1,0 +1,54 @@
+﻿@using AdCore.Models.Auth
+@using AdCore.Models.UserProfile
+@using System.Text.Json
+@using System.Text.Json.Nodes
+@using Newtonsoft.Json
+<EditForm Model="User" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label>First Name:</label>
+        <InputText class="form-control" readonly="@_isFormInactive" @bind-Value="User.FirstName"></InputText>
+    </div>
+    <div class="mb-3">
+        <label>Last Name:</label>
+        <InputText class="form-control" readonly="@_isFormInactive" @bind-Value="User.LastName"></InputText>
+    </div>
+    <div class="mb-3">
+        <label>Display Name:</label>
+        <InputText class="form-control" readonly="@_isFormInactive" @bind-Value="User.DisplayName"></InputText>
+    </div>
+    <div class="mb-3">
+        <label>Email:</label>
+        <InputText class="form-control" readonly="@true" @bind-Value="User.Email"></InputText>
+    </div>
+    @if (!_isFormInactive)
+    {
+        <a class="btn btn-danger" @onclick="OnCancelCLick">Cancel</a>
+        <button class="btn btn-primary">Update</button>
+    }
+</EditForm>
+
+@code {
+
+    [Parameter] public ProfileModel User { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public EventCallback OnCancelCLick { get; set; }
+    private bool _isFormInactive = true;
+
+    [Parameter]
+    public bool IsEditMode { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (IsEditMode)
+        {
+            _isFormInactive = false;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        _isFormInactive = !IsEditMode;
+    }
+
+}

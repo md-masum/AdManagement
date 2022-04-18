@@ -1,11 +1,13 @@
 ﻿using AdCore.Dto;
 using AdCore.Response;
 using AdService.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -23,13 +25,13 @@ namespace AdApi.Controllers
         }
 
         [HttpPost("updateCurrentUser")]
-        public async Task<ActionResult<UserDto>> UpdateCurrentUser(UserUpdateModel user)
+        public async Task<ActionResult<UserDto>> UpdateCurrentUser([FromForm] UserUpdateModel user)
         {
             return Ok(new ApiResponse<UserDto>(await _userService.UpdateUser(user)));
         }
 
-        [HttpGet("changeUserPassword")]
-        public async Task<ActionResult<bool>> ChangeUserPassword(string password)
+        [HttpPost("changeUserPassword")]
+        public async Task<ActionResult<bool>> ChangeUserPassword([FromBody]string password)
         {
             return Ok(new ApiResponse<bool>(await _userService.ChangePassword(password)));
         }

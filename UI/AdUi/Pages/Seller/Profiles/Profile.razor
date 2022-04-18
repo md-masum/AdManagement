@@ -1,0 +1,43 @@
+﻿@page "/seller/profile"
+@using Syncfusion.Blazor.Navigations
+
+<h1>User Details</h1>
+
+<div class="col-lg-12">
+    <SfTab CssClass="default-tab">
+        <TabItems>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Your Profile"></TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <ProfileForm User="CurrentUser" OnValidSubmit="UpdateUser"  IsEditMode="_isEditMode" OnCancelCLick="OnCancelCLick"></ProfileForm>
+                    @if (!_isEditMode)
+                    {
+                        <button class="btn btn-primary" @onclick="OnEditCLick">Update Profile</button>
+                    }
+                </ContentTemplate>
+            </TabItem>
+            <TabItem Content="Under Construction">
+                <ChildContent>
+                    <TabHeader Text="Change Password"></TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label>New Password:</label>
+                                <input type="text" class="form-control" @bind="_password"/>
+                            </div>
+                            <button class="btn btn-primary" @onclick="ChangeUserPassword">Update Password</button>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+        </TabItems>
+    </SfTab>
+</div>
+
+@code {
+
+}

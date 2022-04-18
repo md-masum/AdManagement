@@ -6,6 +6,7 @@ using AdCore.Services;
 using AdCore.Settings;
 using AdRepository;
 using AdRepository.Authentication;
+using AdService;
 using AdService.Base;
 using AdService.Interface;
 using HealthChecks.UI.Client;
@@ -152,6 +153,7 @@ builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<IAdService, AdService.AdService>();
 builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<IUserService, UserService>();
 #endregion
 
 var app = builder.Build();
