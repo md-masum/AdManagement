@@ -1,4 +1,6 @@
 ﻿using AdCore.Entity;
+using AdCore.Enums;
+using AdCore.Exceptions;
 
 namespace AdCore.Extensions
 {
@@ -29,6 +31,65 @@ namespace AdCore.Extensions
         {
             foreach (var property in obj2?.GetType().GetProperties()!)
                 obj1?.GetType().GetProperty(property.Name)?.SetValue(obj1, property.GetValue(obj2));
+        }
+
+        public static FileTypes GetFileType(this string fileType)
+        {
+            return fileType.ToUpper() switch
+            {
+                ".GIF" => FileTypes.Image,
+                ".JPG" => FileTypes.Image,
+                ".JPEG" => FileTypes.Image,
+                ".SVG" => FileTypes.Image,
+                ".PNG" => FileTypes.Image,
+                ".PDF" => FileTypes.Pdf,
+                ".DOC" => FileTypes.Document,
+                ".DOCX" => FileTypes.Document,
+                ".XLS" => FileTypes.Document,
+                ".XLSX" => FileTypes.Document,
+                ".PPT" => FileTypes.Document,
+                ".PPTX" => FileTypes.Document,
+                ".TXT" => FileTypes.Document,
+                ".MKV" => FileTypes.Video,
+                ".AVI" => FileTypes.Video,
+                ".WMV" => FileTypes.Video,
+                ".MP4" => FileTypes.Video,
+                ".3GP" => FileTypes.Video,
+                ".FLV" => FileTypes.Video,
+                _ => throw new CustomException("Invalid file format.")
+            };
+        }
+
+        public static string GetContainerName(this string fileType)
+        {
+            return fileType.ToUpper() switch
+            {
+                ".GIF" => "image-container",
+                ".JPG" => "image-container",
+                ".JPEG" => "image-container",
+                ".SVG" => "image-container",
+                ".PNG" => "image-container",
+                ".PDF" => "pdf-container",
+                ".DOC" => "file-container",
+                ".DOCX" => "file-container",
+                ".XLS" => "file-container",
+                ".XLSX" => "file-container",
+                ".PPT" => "file-container",
+                ".PPTX" => "file-container",
+                ".TXT" => "file-container",
+                ".MKV" => "video-container",
+                ".AVI" => "video-container",
+                ".WMV" => "video-container",
+                ".MP4" => "video-container",
+                ".3GP" => "video-container",
+                ".FLV" => "video-container",
+                _ => throw new CustomException("Invalid file format.")
+            };
+        }
+
+        public static string GetFileExtension(this string fileName)
+        {
+            return "." + fileName.Split('.')[fileName.Split('.').Length - 1];
         }
     }
 }

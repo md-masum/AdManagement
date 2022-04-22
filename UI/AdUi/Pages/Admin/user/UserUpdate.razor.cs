@@ -1,6 +1,5 @@
 ﻿using AdCore.Models.Auth;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace AdUi.Pages.Admin.user
 {

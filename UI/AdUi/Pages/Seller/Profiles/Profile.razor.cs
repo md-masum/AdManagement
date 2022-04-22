@@ -1,5 +1,4 @@
-﻿using AdCore.Models.Auth;
-using AdCore.Models.UserProfile;
+﻿using AdCore.Models.UserProfile;
 
 namespace AdUi.Pages.Seller.Profiles
 {

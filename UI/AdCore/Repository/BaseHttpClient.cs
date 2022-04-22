@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using AdCore.Extensions;
 using AdCore.Response;
 using AdCore.Service;
 using AdCore.Store;
@@ -55,13 +53,11 @@ namespace AdCore.Repository
             try
             {
                 using var multipartFormContent = new MultipartFormDataContent();
-                // multipartFormContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
                 foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(requestBody))
                 {
                     object value = property.GetValue(requestBody);
                     if (value is string)
                     {
-                        // dictionary.Add(property.Name, (T)value);
                         multipartFormContent.Add(new StringContent(value?.ToString()!), name:property.Name);
                     }
                 }

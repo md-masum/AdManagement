@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdCore.Dto;
+﻿using AdCore.Dto;
 using AdCore.Enums;
-using AdCore.Exceptions;
 using AdCore.Interface;
 using AdRepository.Authentication;
 using AdService.Interface;
-using Microsoft.Extensions.Logging;
 
 namespace AdService
 {

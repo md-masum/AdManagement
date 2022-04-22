@@ -12,6 +12,7 @@ using AdService.Interface;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Identity.Web;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
@@ -43,6 +44,13 @@ builder.Host.UseSerilog((ctx, lc) => lc
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddMemoryCache();
+
+builder.Services.Configure<FormOptions>(o =>
+{
+    o.ValueLengthLimit = int.MaxValue;
+    o.MultipartBodyLengthLimit = int.MaxValue;
+    o.MemoryBufferThreshold = int.MaxValue;
+});
 
 #region CosmosDB
 await builder.Services.InitializeCosmosClientAsync(builder.Configuration.GetSection("CosmosDb"));
@@ -166,6 +174,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseCors(policy =>
     policy.WithOrigins("https://localhost:7239")

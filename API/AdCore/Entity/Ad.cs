@@ -18,6 +18,10 @@ namespace AdCore.Entity
         public List<string> ImageUrl { get; set; }
         [JsonProperty(PropertyName = "videoUrl")]
         public List<string> VideoUrl { get; set; }
+        [JsonProperty(PropertyName = "pdfUrl")]
+        public List<string> PdfUrl { get; set; }
+        [JsonProperty(PropertyName = "documentUrl")]
+        public List<string> DocumentUrl { get; set; }
         [JsonProperty(PropertyName = "sellerName")]
         public string SellerName { get; set; }
         [JsonProperty(PropertyName = "sellerId")]

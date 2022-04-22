@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AdApi.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin, Seller")]
+    [Authorize(Roles = "Seller")]
     [ApiController]
     public class AdController : ControllerBase
     {
@@ -46,6 +46,24 @@ namespace AdApi.Controllers
         public async Task<ActionResult<ApiResponse<bool>>> Delete(string id)
         {
             return Ok(new ApiResponse<bool>(await _adService.RemoveAsync(id)));
+        }
+
+        [HttpPut("uploadFiles/{adId}")]
+        public async Task<ActionResult<IList<string>>> UploadFiles(string adId, [FromForm] List<IFormFile> images)
+        {
+            return Ok(new ApiResponse<IList<string>>(await _adService.UploadFiles(adId, images)));
+        }
+
+        [HttpPut("uploadFile/{adId}")]
+        public async Task<ActionResult<IList<string>>> UploadFIle(string adId, [FromForm] IFormFile image)
+        {
+            return Ok(new ApiResponse<IList<string>>(await _adService.UploadFile(adId, image)));
+        }
+
+        [HttpDelete("deleteFile/{adId}")]
+        public async Task<ActionResult<IList<string>>> DeleteFIle(string adId, string fileName)
+        {
+            return Ok(new ApiResponse<bool>(await _adService.DeleteFile(adId, fileName)));
         }
     }
 }
