@@ -1,4 +1,4 @@
-﻿using AdCore.Dto;
+﻿using AdCore.Dto.Ads;
 using AdCore.Entity;
 using Microsoft.AspNetCore.Http;
 

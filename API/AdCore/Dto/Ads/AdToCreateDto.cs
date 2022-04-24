@@ -1,7 +1,7 @@
 ﻿using AdCore.Entity;
 using AdCore.MapperProfile;
 
-namespace AdCore.Dto
+namespace AdCore.Dto.Ads
 {
     public class AdToCreateDto : BaseDto, IMapFrom<Ad>
     {

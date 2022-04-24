@@ -2,7 +2,7 @@
 using AdCore.Enums;
 using AdCore.MapperProfile;
 
-namespace AdCore.Dto
+namespace AdCore.Dto.Ads
 {
     public class AdFileDto : BaseDto, IMapFrom<AdFile>
     {

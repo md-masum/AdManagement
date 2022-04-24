@@ -1,5 +1,5 @@
 ﻿using AdCore.Constant;
-using AdCore.Dto;
+using AdCore.Dto.Ads;
 using AdCore.Entity;
 using AdCore.Exceptions;
 using AdCore.Interface;

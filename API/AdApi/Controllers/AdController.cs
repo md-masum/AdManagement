@@ -1,4 +1,5 @@
 ﻿using AdCore.Dto;
+using AdCore.Dto.Ads;
 using AdCore.Response;
 using AdService.Interface;
 using Microsoft.AspNetCore.Authorization;
