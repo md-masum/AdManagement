@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace Core.Common.CustomValidationAttributes
+namespace AdCore.Common.CustomValidationAttributes
 {
     public class MaxFileSizeAttribute : ValidationAttribute
     {

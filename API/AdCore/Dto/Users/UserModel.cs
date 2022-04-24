@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AdCore.Enums;
 
-namespace AdCore.Dto
+namespace AdCore.Dto.Users
 {
-    public class UserUpdateModel
+    public class UserModel
     {
         [Required]
         public string FirstName { get; set; }
@@ -16,5 +16,10 @@ namespace AdCore.Dto
         public string Email { get; set; }
 
         public Roles Role { get; set; } = Roles.User;
+
+        [Required]
+        public string Password { get; set; }
+        [Compare(nameof(Password))]
+        public string ConfirmPassword { get; set; }
     }
 }

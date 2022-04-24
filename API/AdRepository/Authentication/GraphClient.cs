@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using AdCore.Constant;
-using AdCore.Dto;
+using AdCore.Dto.Users;
 using AdCore.Enums;
 using AdCore.Exceptions;
 using AdCore.Helpers;

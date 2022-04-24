@@ -1,4 +1,4 @@
-﻿using AdCore.Dto;
+﻿using AdCore.Dto.Users;
 using AdCore.Response;
 using AdService.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -34,6 +34,14 @@ namespace AdApi.Controllers
         public async Task<ActionResult<bool>> ChangeUserPassword([FromBody]string password)
         {
             return Ok(new ApiResponse<bool>(await _userService.ChangePassword(password)));
+        }
+
+        [AllowAnonymous]
+        [HttpPost("addUser")]
+        public async Task<ActionResult<bool>> AddUser([FromBody] string adB2CId)
+        {
+            await _userService.AddUser(adB2CId);
+            return Ok();
         }
     }
 }

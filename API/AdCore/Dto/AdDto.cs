@@ -1,6 +1,5 @@
 ﻿using AdCore.Entity;
 using AdCore.MapperProfile;
-using AutoMapper;
 
 namespace AdCore.Dto
 {
