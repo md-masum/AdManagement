@@ -33,7 +33,7 @@ if (!Directory.Exists(pathBuilt))
     Directory.CreateDirectory(pathBuilt);
 }
 
-builder.Host.UseSerilog((ctx, lc) => lc
+builder.Host.UseSerilog((_, lc) => lc
     .WriteTo.File(pathBuilt + "\\log.txt", rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 5242880,
         rollOnFileSizeLimit: true)
     // .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Information)

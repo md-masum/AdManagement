@@ -58,12 +58,6 @@ namespace AdService.Base
             return _mapper.Map<IList<TDto>>(data);
         }
 
-        public virtual async Task<IList<TEntity>> GetAllEntityAsync()
-        {
-            var data = await BaseRepository.GetAllAsync();
-            return data;
-        }
-
         public virtual async Task<IList<TDto>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
             var data = await BaseRepository.GetAllAsync();

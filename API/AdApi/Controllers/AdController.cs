@@ -49,15 +49,15 @@ namespace AdApi.Controllers
         }
 
         [HttpPut("uploadFiles/{adId}")]
-        public async Task<ActionResult<IList<string>>> UploadFiles(string adId, [FromForm] List<IFormFile> images)
+        public async Task<ActionResult<IList<string>>> UploadFiles(string adId, [FromForm] List<FileToUpload> files)
         {
-            return Ok(new ApiResponse<IList<string>>(await _adService.UploadFiles(adId, images)));
+            return Ok(new ApiResponse<IList<string>>(await _adService.UploadFiles(adId, files.Select(s => s.File).ToList())));
         }
 
         [HttpPut("uploadFile/{adId}")]
-        public async Task<ActionResult<IList<string>>> UploadFIle(string adId, [FromForm] IFormFile image)
+        public async Task<ActionResult<IList<string>>> UploadFIle(string adId, [FromForm] FileToUpload file)
         {
-            return Ok(new ApiResponse<IList<string>>(await _adService.UploadFile(adId, image)));
+            return Ok(new ApiResponse<IList<string>>(await _adService.UploadFile(adId, file.File)));
         }
 
         [HttpDelete("deleteFile/{adId}")]

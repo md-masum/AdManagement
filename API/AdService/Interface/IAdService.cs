@@ -9,7 +9,7 @@ namespace AdService.Interface
         Task<AdDto> Create(AdToCreateDto adToCreate);
         Task<string> UploadFile(string adId, IFormFile file);
         Task<IList<string>> UploadFiles(string adId, IList<IFormFile> files);
-        Task<bool> DeleteFile(string adId, string fileName);
+        Task<bool> DeleteFile(string adId, string fileId);
         Task<AdDto> Update(string id, AdToUpdateDto adToUpdate);
     }
 }

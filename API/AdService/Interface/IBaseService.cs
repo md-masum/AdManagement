@@ -8,7 +8,6 @@ namespace AdService.Interface
         //HTTP GET LIST
         Task<IList<TDto>> GetAllAsync();
         Task<IList<TDto>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
-        Task<IList<TEntity>> GetAllEntityAsync();
 
         //HTTP GET SINGLE
         Task<TDto> GetByIdAsync(string id);

@@ -1,31 +1,44 @@
-﻿using AdCore.Exceptions;
+﻿using AdCore.Dto;
+using AdCore.Entity;
+using AdCore.Exceptions;
 using AdCore.Extensions;
-using AdCore.Interface;
+using AdRepository.Interface;
+using AdService.Base;
+using AdService.Interface;
+using AutoMapper;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace AdCore.Services
+namespace AdService
 {
-    public class FileUploadService : IFileUploadService
+    public class FileUploadService : BaseService<AdFile, AdFileDto>, IFileUploadService
     {
+        private readonly IMapper _mapper;
         private readonly ILogger<FileUploadService> _logger;
         private readonly string _storageConnectionString;
 
-        public FileUploadService(IConfiguration configuration, ILogger<FileUploadService> logger)
+        public FileUploadService(ICosmosDbRepository<AdFile> baseRepository, 
+            IConfiguration configuration, 
+            IMapper mapper,
+            ILogger<FileUploadService> logger) : base(baseRepository, mapper)
         {
+            _mapper = mapper;
             _logger = logger;
             _storageConnectionString = configuration.GetConnectionString("AzureStorage");
         }
-        public bool DeleteFileDisk(string key)
+        public async Task<bool> DeleteFileDisk(string key)
         {
-            var pathBuilt = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\" + key);
+            var fileObj = await BaseRepository.GetAsync(key);
+            if(fileObj == null) return false;
+            var pathBuilt = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\" + fileObj.Url);
             FileInfo file = new FileInfo(pathBuilt);
             if (file.Exists)
             {
                 file.Delete();
+                await BaseRepository.DeleteAsync(key);
                 return true;
             }
 
@@ -36,11 +49,12 @@ namespace AdCore.Services
         {
             try
             {
-                var extension = key.GetFileExtension();
-
-                var container = await BlobContainerClient(extension);
-                var blob = container.GetBlobClient(key);
+                var fileObj = await BaseRepository.GetAsync(key);
+                if(fileObj is null) return false;
+                var container = await BlobContainerClient(fileObj.FileType.GetContainerName());
+                var blob = container.GetBlobClient(fileObj.Name);
                 await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+                await BaseRepository.DeleteAsync(key);
                 return true;
             }
             catch (Exception e)
@@ -50,7 +64,7 @@ namespace AdCore.Services
             }
         }
 
-        public async Task<string> UploadFileDisk(IFormFile file, string keyPrefix = null)
+        public async Task<AdFileDto> UploadFileDisk(IFormFile file, string keyPrefix = null)
         {
             try
             {
@@ -71,7 +85,13 @@ namespace AdCore.Services
                 await using var stream = new FileStream(path, FileMode.Create);
                 await file.CopyToAsync(stream);
 
-                return Path.Combine("Upload\\fils", fileName);
+                var adFile = new AdFile
+                {
+                    Name = fileName,
+                    Url = Path.Combine("Upload\\fils", fileName),
+                    FileType = extension.GetFileType()
+                };
+                return _mapper.Map<AdFileDto>(await BaseRepository.AddAsync(adFile));
             }
             catch (Exception e)
             {
@@ -79,7 +99,7 @@ namespace AdCore.Services
             }
         }
 
-        public async Task<string> UploadFileCloud(IFormFile file, string keyPrefix = null)
+        public async Task<AdFileDto> UploadFileCloud(IFormFile file, string keyPrefix = null)
         {
             try
             {
@@ -87,11 +107,18 @@ namespace AdCore.Services
                 var extension = file.FileName.GetFileExtension();
                 var fileName = keyPrefix + extension;
 
-                var container = await BlobContainerClient(extension);
+                var container = await BlobContainerClient(extension.GetContainerName());
                 var blob = container.GetBlobClient(fileName);
                 await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
                 await blob.UploadAsync(file.OpenReadStream(), new BlobHttpHeaders { ContentType = file.ContentType });
-                return blob.Uri.ToString();
+
+                var adFile = new AdFile
+                {
+                    Name = fileName,
+                    Url = blob.Uri.ToString(),
+                    FileType = extension.GetFileType()
+                };
+                return _mapper.Map<AdFileDto>(await BaseRepository.AddAsync(adFile));
             }
             catch (Exception e)
             {
@@ -99,36 +126,36 @@ namespace AdCore.Services
             }
         }
 
-        public async Task<List<string>> UploadFilesDisk(
+        public async Task<List<AdFileDto>> UploadFilesDisk(
             List<(IFormFile file, string keyPrefix)> uploadFiles)
         {
-            List<string> fileName = new List<string>();
+            List<AdFileDto> adFile = new List<AdFileDto>();
 
             foreach (var uploadFile in uploadFiles)
             {
-                fileName.Add(await UploadFileDisk(uploadFile.file, uploadFile.keyPrefix));
+                adFile.Add(await UploadFileDisk(uploadFile.file, uploadFile.keyPrefix));
             }
 
-            return fileName;
+            return adFile;
         }
 
-        public async Task<List<string>> UploadFilesCloud(
+        public async Task<List<AdFileDto>> UploadFilesCloud(
             List<(IFormFile file, string keyPrefix)> uploadFiles)
         {
-            List<string> fileName = new List<string>();
+            List<AdFileDto> adFile = new List<AdFileDto>();
 
             foreach (var uploadFile in uploadFiles)
             {
-                fileName.Add(await UploadFileCloud(uploadFile.file, uploadFile.keyPrefix));
+                adFile.Add(await UploadFileCloud(uploadFile.file, uploadFile.keyPrefix));
             }
 
-            return fileName;
+            return adFile;
         }
 
 
-        private async Task<BlobContainerClient> BlobContainerClient(string extension)
+        private async Task<BlobContainerClient> BlobContainerClient(string containerName)
         {
-            var container = new BlobContainerClient(_storageConnectionString, extension.GetContainerName());
+            var container = new BlobContainerClient(_storageConnectionString, containerName);
             var createResponse = await container.CreateIfNotExistsAsync();
 
             if (createResponse is not null && createResponse.GetRawResponse().Status == 201)

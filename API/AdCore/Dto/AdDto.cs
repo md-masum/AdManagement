@@ -1,5 +1,6 @@
 ﻿using AdCore.Entity;
 using AdCore.MapperProfile;
+using AutoMapper;
 
 namespace AdCore.Dto
 {
@@ -10,8 +11,7 @@ namespace AdCore.Dto
         public DateTime? EndDate { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
-        public List<string> ImageUrl { get; set; }
-        public List<string> VideoUrl { get; set; }
+        public List<AdFileDto> AdFiles { get; set; }
         public string SellerName { get; set; }
         public string SellerId { get; set; }
     }

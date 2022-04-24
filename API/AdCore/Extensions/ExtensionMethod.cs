@@ -87,6 +87,18 @@ namespace AdCore.Extensions
             };
         }
 
+        public static string GetContainerName(this FileTypes fileType)
+        {
+            return fileType switch
+            {
+                FileTypes.Image => "image-container",
+                FileTypes.Pdf => "pdf-container",
+                FileTypes.Document => "file-container",
+                FileTypes.Video => "video-container",
+                _ => throw new CustomException("Invalid file type.")
+            };
+        }
+
         public static string GetFileExtension(this string fileName)
         {
             return "." + fileName.Split('.')[fileName.Split('.').Length - 1];

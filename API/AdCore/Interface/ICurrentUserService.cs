@@ -1,4 +1,6 @@
-﻿namespace AdCore.Interface
+﻿using AdCore.Enums;
+
+namespace AdCore.Interface
 {
     public interface ICurrentUserService
     {
@@ -7,5 +9,6 @@
         string Email { get; }
         string FirstName { get; }
         string LastName { get; }
+        Roles Roles { get; }
     }
 }
