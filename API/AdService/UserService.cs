@@ -1,5 +1,4 @@
 ﻿using AdCore.Dto.Users;
-using AdCore.Entity;
 using AdCore.Enums;
 using AdCore.Interface;
 using AdRepository.Authentication;
@@ -8,6 +7,7 @@ using AdService.Base;
 using AdService.Interface;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
+using User = AdCore.Entity.User;
 
 namespace AdService
 {
@@ -29,7 +29,7 @@ namespace AdService
         }
         public async Task<UserDto> GetCurrentUser()
         {
-            return await GetCurrentUserDetails();
+            return await _currentUserService.CurrentLoggedInUser();
         }
 
         public async Task<UserDto> UpdateUser(UserUpdateModel user)
@@ -37,7 +37,7 @@ namespace AdService
             var userRole = await _graphClient.GetUserRoleById(_currentUserService.UserId);
             user.Role = (Roles)Enum.Parse(typeof(Roles), userRole);
             await _graphClient.UpdateUser(_currentUserService.UserId, user);
-            return await GetCurrentUserDetails();
+            return await _currentUserService.CurrentLoggedInUser();
         }
 
         public async Task<bool> ChangePassword(string password)
@@ -55,7 +55,7 @@ namespace AdService
                 return;
             }
 
-            var userDetails = await GetAsync(c => c.AdB2CId == _currentUserService.UserId);
+            var userDetails = await GetByIdAsync(adB2CId);
             if (userDetails is not null)
             {
                 _logger.LogError($"User is already present");
@@ -64,21 +64,11 @@ namespace AdService
 
             var userToCreate = new User
             {
-                AdB2CId = adB2CId
+                AdB2CId = adB2CId,
+                Id = adB2CId
             };
 
             await BaseRepository.AddAsync(userToCreate);
-        }
-
-        private async Task<UserDto> GetCurrentUserDetails()
-        {
-            var user = await GetAsync(c => c.AdB2CId == _currentUserService.UserId);
-            user.Role = _currentUserService.Roles;
-            user.FirstName = _currentUserService.FirstName;
-            user.LastName = _currentUserService.LastName;
-            user.DisplayName = _currentUserService.UserName;
-            user.Email = _currentUserService.Email;
-            return user;
         }
     }
 }

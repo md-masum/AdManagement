@@ -19,7 +19,7 @@ namespace AdRepository
             await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
 
             services.AddSingleton(client);
-            services.AddSingleton(typeof(ICosmosDbRepository<>), typeof(CosmosDbRepository<>));
+            services.AddScoped(typeof(ICosmosDbRepository<>), typeof(CosmosDbRepository<>));
         }
     }
 }

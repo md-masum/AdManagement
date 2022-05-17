@@ -13,17 +13,20 @@ namespace AdService
 {
     public class AdService : BaseService<Ad, AdDto>, IAdService
     {
+        private readonly ICosmosDbRepository<Company> _companyRepository;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
         private readonly ICacheService _cacheService;
         private readonly ICurrentUserService _currentUserService;
 
-        public AdService(ICosmosDbRepository<Ad> baseRepository, 
+        public AdService(ICosmosDbRepository<Ad> baseRepository,
+            ICosmosDbRepository<Company> companyRepository,
             IMapper mapper, 
             IFileUploadService fileUploadService,
             ICacheService cacheService,
             ICurrentUserService currentUserService) : base(baseRepository, mapper)
         {
+            _companyRepository = companyRepository;
             _mapper = mapper;
             _fileUploadService = fileUploadService;
             _cacheService = cacheService;
@@ -56,9 +59,11 @@ namespace AdService
 
         public async Task<AdDto> Create(AdToCreateDto adToCreate)
         {
+            if (await _currentUserService.HasAssociateCompany())
+                throw new CustomException("User don't have any company");
+            var currentUser = await _currentUserService.CurrentLoggedInUser();
             var ad = _mapper.Map<Ad>(adToCreate);
-            ad.SellerId = _currentUserService.UserId;
-            ad.SellerName = _currentUserService.UserName;
+            ad.CompanyId = currentUser.CompanyId;
             var data = await BaseRepository.AddAsync(ad);
             _cacheService.Remove(CacheKey.AdList);
 

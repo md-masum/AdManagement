@@ -10,9 +10,6 @@ namespace AdCore.Entity
         #region Seller for only
         [JsonProperty(PropertyName = "companyId")]
         public string CompanyId { get; set; }
-
-        [JsonProperty(PropertyName = "userType")]
-        public string UserType { get; set; }
         #endregion
 
 

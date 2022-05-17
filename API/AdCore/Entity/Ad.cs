@@ -22,10 +22,7 @@ namespace AdCore.Entity
         [JsonProperty(PropertyName = "fileId")]
         public List<string> FileId { get; set; }
 
-        [JsonProperty(PropertyName = "sellerName")]
-        public string SellerName { get; set; }
-
-        [JsonProperty(PropertyName = "sellerId")]
-        public string SellerId { get; set; }
+        [JsonProperty(PropertyName = "companyId")]
+        public string CompanyId { get; set; }
     }
 }

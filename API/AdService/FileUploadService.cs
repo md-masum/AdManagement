@@ -127,26 +127,26 @@ namespace AdService
         }
 
         public async Task<List<AdFileDto>> UploadFilesDisk(
-            List<(IFormFile file, string keyPrefix)> uploadFiles)
+            List<IFormFile> uploadFiles)
         {
             List<AdFileDto> adFile = new List<AdFileDto>();
 
             foreach (var uploadFile in uploadFiles)
             {
-                adFile.Add(await UploadFileDisk(uploadFile.file, uploadFile.keyPrefix));
+                adFile.Add(await UploadFileDisk(uploadFile));
             }
 
             return adFile;
         }
 
         public async Task<List<AdFileDto>> UploadFilesCloud(
-            List<(IFormFile file, string keyPrefix)> uploadFiles)
+            List<IFormFile> uploadFiles)
         {
             List<AdFileDto> adFile = new List<AdFileDto>();
 
             foreach (var uploadFile in uploadFiles)
             {
-                adFile.Add(await UploadFileCloud(uploadFile.file, uploadFile.keyPrefix));
+                adFile.Add(await UploadFileCloud(uploadFile));
             }
 
             return adFile;

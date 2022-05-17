@@ -1,4 +1,5 @@
-﻿using AdCore.Enums;
+﻿using AdCore.Dto.Users;
+using AdCore.Enums;
 
 namespace AdCore.Interface
 {
@@ -10,5 +11,9 @@ namespace AdCore.Interface
         string FirstName { get; }
         string LastName { get; }
         Roles Roles { get; }
+
+        Task<bool> HasAssociateCompany();
+        Task<bool> IsMasterSeller();
+        Task<UserDto> CurrentLoggedInUser();
     }
 }

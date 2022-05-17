@@ -157,11 +157,12 @@ builder.Services.AddSingleton<IMailService, MailService>();
 
 #region Services
 builder.Services.AddScoped(typeof(IBaseService<,>), typeof(BaseService<,>));
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<IAdService, AdService.AdService>();
-builder.Services.AddTransient<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 #endregion
 
 var app = builder.Build();

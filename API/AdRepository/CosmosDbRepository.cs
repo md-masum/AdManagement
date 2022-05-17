@@ -2,6 +2,7 @@
 using AdCore.Interface;
 using AdRepository.Interface;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AdRepository
@@ -11,12 +12,13 @@ namespace AdRepository
         private readonly ILogger<CosmosDbRepository<TEntity>> _logger;
         private readonly ICurrentUserService _currentUserService;
         private readonly Container _container;
-        public CosmosDbRepository(CosmosClient cosmosDbClient, 
-            ILogger<CosmosDbRepository<TEntity>> logger, 
-            ICurrentUserService currentUserService)
+        public CosmosDbRepository(CosmosClient cosmosDbClient,
+            IServiceScopeFactory serviceScopeFactory,
+            ILogger<CosmosDbRepository<TEntity>> logger)
         {
             _logger = logger;
-            _currentUserService = currentUserService;
+            using var scope = serviceScopeFactory.CreateScope();
+            _currentUserService = scope.ServiceProvider.GetService<ICurrentUserService>();
             var databaseName = CosmosClientInstance.DatabaseName;
             var containerName = CosmosClientInstance.ContainerName;
             _container = cosmosDbClient.GetContainer(databaseName, containerName);
@@ -38,7 +40,7 @@ namespace AdRepository
             return results;
         }
 
-        public async Task<IList<TEntity>> GetAsync(QueryDefinition query)
+        public async Task<IList<TEntity>> GetAllAsync(QueryDefinition query)
         {
             var data = _container.GetItemQueryIterator<TEntity>(query);
             var results = new List<TEntity>();
@@ -64,9 +66,21 @@ namespace AdRepository
             }
         }
 
+        public async Task<TEntity> GetAsync(QueryDefinition query)
+        {
+            var data = _container.GetItemQueryIterator<TEntity>(query);
+            var results = new List<TEntity>();
+            while (data.HasMoreResults)
+            {
+                var response = await data.ReadNextAsync();
+                results.AddRange(response.ToList());
+            }
+            return results.FirstOrDefault();
+        }
+
         public async Task<TEntity> AddAsync(TEntity item)
         {
-            item.Id = Guid.NewGuid().ToString();
+            item.Id ??= Guid.NewGuid().ToString();
             item.Type = typeof(TEntity).Name;
             item.CreatedBy = _currentUserService.UserId;
             item.CreatedDate = DateTime.UtcNow;

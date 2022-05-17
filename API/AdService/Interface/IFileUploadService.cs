@@ -12,9 +12,9 @@ namespace AdService.Interface
         Task<AdFileDto> UploadFileCloud(IFormFile file, string keyPrefix = null);
 
         Task<List<AdFileDto>> UploadFilesDisk(
-            List<(IFormFile file, string keyPrefix)> uploadFiles);
+            List<IFormFile> uploadFiles);
 
         Task<List<AdFileDto>> UploadFilesCloud(
-            List<(IFormFile file, string keyPrefix)> uploadFiles);
+            List<IFormFile> uploadFiles);
     }
 }
