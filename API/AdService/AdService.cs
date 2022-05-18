@@ -13,24 +13,21 @@ namespace AdService
 {
     public class AdService : BaseService<Ad, AdDto>, IAdService
     {
-        private readonly ICosmosDbRepository<Company> _companyRepository;
         private readonly IMapper _mapper;
         private readonly IFileUploadService _fileUploadService;
         private readonly ICacheService _cacheService;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly ICurrentUserInfoService _currentUserInfoService;
 
         public AdService(ICosmosDbRepository<Ad> baseRepository,
-            ICosmosDbRepository<Company> companyRepository,
             IMapper mapper, 
             IFileUploadService fileUploadService,
             ICacheService cacheService,
-            ICurrentUserService currentUserService) : base(baseRepository, mapper)
+            ICurrentUserInfoService currentUserService) : base(baseRepository, mapper)
         {
-            _companyRepository = companyRepository;
             _mapper = mapper;
             _fileUploadService = fileUploadService;
             _cacheService = cacheService;
-            _currentUserService = currentUserService;
+            _currentUserInfoService = currentUserService;
         }
         public override async Task<IList<AdDto>> GetAllAsync()
         {
@@ -59,9 +56,9 @@ namespace AdService
 
         public async Task<AdDto> Create(AdToCreateDto adToCreate)
         {
-            if (await _currentUserService.HasAssociateCompany())
+            if (await _currentUserInfoService.HasAssociateCompany())
                 throw new CustomException("User don't have any company");
-            var currentUser = await _currentUserService.CurrentLoggedInUser();
+            var currentUser = await _currentUserInfoService.CurrentLoggedInUser();
             var ad = _mapper.Map<Ad>(adToCreate);
             ad.CompanyId = currentUser.CompanyId;
             var data = await BaseRepository.AddAsync(ad);

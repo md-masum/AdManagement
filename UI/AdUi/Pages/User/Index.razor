@@ -25,7 +25,7 @@ Welcome to your new app. <br/>
         _httpInterceptor.RegisterEvent();
         AssignUserTheme((await AuthenticationState).User);
 
-        _forecasts = await _httpAnonymousClient.GetJsonAsync<string[]>("WeatherForecast");
+        _forecasts = await _httpAnonymousClient.GetJsonAsync<string[]>("Test");
         // _forecasts = await _httpAuthorizeClient.GetAsync<string[]>("WeatherForecast");
     }
 

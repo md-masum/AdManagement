@@ -2,23 +2,21 @@
 using AdCore.Interface;
 using AdRepository.Interface;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AdRepository
 {
     public class CosmosDbRepository<TEntity> : ICosmosDbRepository<TEntity> where TEntity : BaseEntity
     {
+        private readonly ICurrentUserService _userService;
         private readonly ILogger<CosmosDbRepository<TEntity>> _logger;
-        private readonly ICurrentUserService _currentUserService;
         private readonly Container _container;
         public CosmosDbRepository(CosmosClient cosmosDbClient,
-            IServiceScopeFactory serviceScopeFactory,
+            ICurrentUserService userService,
             ILogger<CosmosDbRepository<TEntity>> logger)
         {
+            _userService = userService;
             _logger = logger;
-            using var scope = serviceScopeFactory.CreateScope();
-            _currentUserService = scope.ServiceProvider.GetService<ICurrentUserService>();
             var databaseName = CosmosClientInstance.DatabaseName;
             var containerName = CosmosClientInstance.ContainerName;
             _container = cosmosDbClient.GetContainer(databaseName, containerName);
@@ -82,7 +80,7 @@ namespace AdRepository
         {
             item.Id ??= Guid.NewGuid().ToString();
             item.Type = typeof(TEntity).Name;
-            item.CreatedBy = _currentUserService.UserId;
+            item.CreatedBy = _userService.UserId;
             item.CreatedDate = DateTime.UtcNow;
             var response = await _container.CreateItemAsync(item, new PartitionKey(item.Id));
             return response.Resource;
@@ -91,7 +89,7 @@ namespace AdRepository
         public async Task<TEntity> UpdateAsync(string id, TEntity item)
         {
             item.Type = typeof(TEntity).Name;
-            item.UpdateBy = _currentUserService.UserId;
+            item.UpdateBy = _userService.UserId;
             item.UpdateDate = DateTime.UtcNow;
             var response = await _container.UpsertItemAsync(item, new PartitionKey(id));
             return response.Resource;

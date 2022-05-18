@@ -2,6 +2,7 @@
 using AdCore.Entity;
 using AdCore.Exceptions;
 using AdCore.Extensions;
+using AdCore.Interface;
 using AdRepository.Interface;
 using AdService.Base;
 using AdService.Interface;

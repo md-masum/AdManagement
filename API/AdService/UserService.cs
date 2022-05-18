@@ -15,17 +15,17 @@ namespace AdService
     {
         private readonly GraphClient _graphClient;
         private readonly ILogger<UserService> _logger;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly ICurrentUserInfoService _currentUserService;
 
         public UserService(GraphClient graphClient,
             ICosmosDbRepository<User> baseRepository,
             IMapper mapper,
             ILogger<UserService> logger,
-            ICurrentUserService currentUserService) : base(baseRepository, mapper)
+            ICurrentUserInfoService currentUserService) : base(baseRepository, mapper)
         {
+            _currentUserService = currentUserService;
             _graphClient = graphClient;
             _logger = logger;
-            _currentUserService = currentUserService;
         }
         public async Task<UserDto> GetCurrentUser()
         {

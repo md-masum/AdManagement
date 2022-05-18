@@ -13,22 +13,19 @@ namespace AdService
 {
     public class CompanyService : BaseService<Company, CompanyDto>, ICompanyService
     {
-        private readonly ICosmosDbRepository<Ad> _adRepository;
         private readonly ICosmosDbRepository<User> _useRepository;
-        private readonly ICurrentUserService _currentUserService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly ICurrentUserInfoService _currentUserService;
         private readonly IMapper _mapper;
 
         public CompanyService(ICosmosDbRepository<Company> baseRepository,
-            ICosmosDbRepository<Ad> adRepository,
             ICosmosDbRepository<User> useRepository,
-            ICurrentUserService currentUserService,
+            ICurrentUserInfoService currentUserService,
             IFileUploadService fileUploadService,
             IMapper mapper) : base(baseRepository, mapper)
         {
-            _adRepository = adRepository;
-            _useRepository = useRepository;
             _currentUserService = currentUserService;
+            _useRepository = useRepository;
             _fileUploadService = fileUploadService;
             _mapper = mapper;
         }

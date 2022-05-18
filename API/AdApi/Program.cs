@@ -158,6 +158,7 @@ builder.Services.AddSingleton<IMailService, MailService>();
 #region Services
 builder.Services.AddScoped(typeof(IBaseService<,>), typeof(BaseService<,>));
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<ICurrentUserInfoService, CurrentUserInfoService>();
 builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<IAdService, AdService.AdService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();

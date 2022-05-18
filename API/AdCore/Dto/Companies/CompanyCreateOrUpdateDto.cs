@@ -3,7 +3,7 @@ using AdCore.MapperProfile;
 
 namespace AdCore.Dto.Companies
 {
-    public class CompanyCreateOrUpdateDto : IMapFrom<Company>, IMapFrom<CompanyDto>
+    public class CompanyCreateOrUpdateDto : IMapFrom<CompanyDto>
     {
         public string Name { get; set; }
         public string ShortDescription { get; set; }
